@@ -13,6 +13,7 @@ function(files)
 {
     vals = lapply(files, function(f) structure(nchar(readLines(f)), class = "FileLineLength"))
     names(vals) = basename(files)
+    vals
 }
 
 showFileOutlines =
