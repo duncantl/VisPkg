@@ -2,15 +2,21 @@ showFiles =
     #
     #
     #
-function(dir, files = list.files(dir, full.names = TRUE, ...), ...)
+function(dir, files = list.files(dir, full.names = TRUE, ...), ..., drawLines = TRUE)
+{
+    info = computeFileInfo(files)
+    showFileOutlines(vals, main = dir, drawLines = drawLines)
+}
+
+computeFileInfo =
+function(files)    
 {
     vals = lapply(files, function(f) structure(nchar(readLines(f)), class = "FileLineLength"))
     names(vals) = basename(files)
-    showFileOutlines(vals, main = dir)
 }
 
 showFileOutlines =
-function(vals, main = "")
+function(vals, main = "", drawLines = TRUE)
 {
     opar = par(no.readonly = TRUE)
     on.exit(par(mar = opar$mar))
@@ -28,10 +34,11 @@ function(vals, main = "")
     bottom = 1 - nlines/max(nlines)
     rect(x0, bottom, x0 + 1, rep(1, length(vals)))
 
-    ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1))
-    ans = do.call(rbind, ans)
-    lines(ans)
-    
+    if(drawLines) {
+        ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1))
+        ans = do.call(rbind, ans)
+        lines(ans)
+    }
 }
 
 showFileElements =
