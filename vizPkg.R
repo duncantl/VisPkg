@@ -4,7 +4,7 @@ showFiles =
     #
 function(dir, files = list.files(dir, full.names = TRUE, ...), ..., drawLines = TRUE)
 {
-    info = computeFileInfo(files)
+    vals = computeFileInfo(files)
     showFileOutlines(vals, main = dir, drawLines = drawLines)
 }
 
