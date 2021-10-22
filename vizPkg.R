@@ -45,7 +45,7 @@ function(elInfo, left, right, bottom, top = 1)
     yv = seq(top, bottom, length = len)
     y = x = rep(NA, 3 * len)
     i = seq(1, by = 1, length = 3*len)
-    y[ !(i %% 0) ] = rep(yv, each = 2)
+    y[ (i %% 3 != 0) ] = rep(yv, each = 2)
 
     i = seq(1, by = 3, length = len)
     x[i] = left
