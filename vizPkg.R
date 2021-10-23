@@ -2,10 +2,9 @@ showFiles =
     #
     #
     #
-function(dir, files = list.files(dir, full.names = TRUE, ...), ..., drawLines = TRUE)
+function(dir, files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$", ..., drawLines = TRUE)
 {
-    vals = computeFileInfo(files)
-    showFileOutlines(vals, main = dir, drawLines = drawLines)
+    showFileOutlines(vals, main = dir, drawLines = drawLines, ...)
 }
 
 computeFileInfo =
@@ -17,12 +16,12 @@ function(files)
 }
 
 showFileOutlines =
-function(vals, main = "", drawLines = TRUE)
+function(vals, main = "", drawLines = TRUE, ...)
 {
     opar = par(no.readonly = TRUE)
     on.exit(par(mar = opar$mar))
-    nc = max(nchar(names(vals)))
 
+    nc = max(nchar(names(vals)))
     par(mar = c(floor(nc/3), 1, 2, 1))
     plot(0, xlim = c(1, length(vals)), ylim = c(0, 1), type = "n", axes = FALSE, xlab = "", ylab = "")
     box()
