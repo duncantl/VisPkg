@@ -4,6 +4,7 @@ showFiles =
     #
 function(dir, files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$", ..., drawLines = TRUE)
 {
+    vals = computeFileInfo(files)
     showFileOutlines(vals, main = dir, drawLines = drawLines, ...)
 }
 
@@ -21,13 +22,7 @@ function(vals, main = "", drawLines = TRUE, ...)
     opar = par(no.readonly = TRUE)
     on.exit(par(mar = opar$mar))
 
-    nc = max(nchar(names(vals)))
-    par(mar = c(floor(nc/3), 1, 2, 1))
-    plot(0, xlim = c(1, length(vals)), ylim = c(0, 1), type = "n", axes = FALSE, xlab = "", ylab = "")
-    box()
-    text(labels = names(vals), x = 1:length(vals), y = par("usr")[3]*1.2, xpd = NA, srt = 45, adj = 1)
-
-    title(main)
+    mkEmptyPlot(names(vals), main)
     
     x0 = seq(.5, by = 1, length = length(vals))
     nlines = sapply(vals, length)
@@ -40,6 +35,17 @@ function(vals, main = "", drawLines = TRUE, ...)
         lines(ans)
     }
 }
+
+mkEmptyPlot =
+function(fileNames, main = "")
+{
+    nc = max(nchar(fileNames))
+    par(mar = c(floor(nc/3), 1, 2, 1))
+    plot(0, xlim = c(1, length(fileNames)), ylim = c(0, 1), type = "n", axes = FALSE, xlab = "", ylab = "", main = main)
+    box()
+    text(labels = fileNames, x = 1:length(fileNames), y = par("usr")[3]*1.2, xpd = NA, srt = 45, adj = 1)
+}
+
 
 showFileElements =
 function(elInfo, left, right, bottom, top = 1)
