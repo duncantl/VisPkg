@@ -2,9 +2,8 @@ showFiles =
     #
     #
     #
-function(dir, files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$", ..., drawLines = TRUE)
+function(dir, vals = computeFileInfo(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$", ..., drawLines = TRUE)
 {
-    vals = computeFileInfo(files)
     showFileOutlines(vals, main = dir, drawLines = drawLines, ...)
 }
 
@@ -25,7 +24,8 @@ function(vals, main = "", drawLines = TRUE, ...)
     mkEmptyPlot(names(vals), main)
     
     x0 = seq(.5, by = 1, length = length(vals))
-    nlines = sapply(vals, length)
+#    nlines = sapply(vals, length)
+    nlines = sapply(vals, function(x) if(is.data.frame(x)) nrow(x) else length(x))
     bottom = 1 - nlines/max(nlines)
     rect(x0, bottom, x0 + 1, rep(1, length(vals)))
 
@@ -48,8 +48,24 @@ function(fileNames, main = "")
 
 
 showFileElements =
+function(elInfo, left, right, bottom, top = 1,
+         color = if(is.data.frame(elInfo)) elInfo[,2] else "black")
+{
+    coords = computeFileLineCoords(elInfo, left, right, bottom, top = top)
+    
+    if(length(color) != nrow(coords))
+        color = rep(color, each = 3)
+
+    lines(coords, col = color)
+}
+
+computeFileLineCoords =
 function(elInfo, left, right, bottom, top = 1)
 {
+
+    if(is.data.frame(elInfo))
+        elInfo = elInfo[,1]
+    
     # elInfo will initially be the number of characters per line
     # so we want to draw each line between left and right proportionally
     # to that length.
@@ -67,3 +83,4 @@ function(elInfo, left, right, bottom, top = 1)
       
     cbind(x, y)
 }
+

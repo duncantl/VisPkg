@@ -2,7 +2,7 @@ toplevelTypes =
     # why hoist code - in case we parse(text = "....")
 function(file, code = parse(file))
 {
-   sapply(code, getToplevelCodeType)
+   unlist(sapply(code, getToplevelCodeType))
 }
 
 
@@ -28,7 +28,8 @@ function(e, followIf = TRUE)
                    "<-" = getToplevelCodeType(e[[3]]),
                    "setMethod" = "S4method",
                    "setGeneric" = "S4generic",
-                   "setAs" = "S4As",                   
+                   "setAs" = "S4As",
+                   "setClass" = "S4Class",                   
                    "setOldClass" = "S3OldClass",
                    "function" = "function",
                    "if" = switch(class(e[[2]]),
@@ -70,6 +71,27 @@ function(e)
 {
   is.call(e) && length(e) == 2 && (isLiteral(e[[2]]) || is.name(e[[2]]))
 }
+
+
+###
+TypeColorMap = c(call = "black", data = "green", "function" = "blue", "if" = "yellow",
+   ifTRUE = "grey", ifFALSE = "red",
+   NULL = "black",
+   S3OldClass = "orange", S4Class = "purple", S4method = "salmon", S4As = "pink",
+   S4generic = "navy",
+   symbol = "black")
+
+getToplevelTypeDF =
+function(file)
+{
+    tmp = toplevelTypes(file)
+    data.frame(len = rep(1, length(tmp)),
+               color = TypeColorMap[tmp],
+               type = tmp)
+}    
+
+
+
 ######################
 
 
@@ -78,3 +100,8 @@ function(file, lines = readLines(file))
 {
 
 }
+
+
+
+
+
