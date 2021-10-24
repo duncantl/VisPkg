@@ -28,8 +28,12 @@ function(vals, drawLines = TRUE, ...)
     bottom = 1 - nlines/max(nlines)
     rect(x0, bottom, x0 + 1, rep(1, length(vals)))
 
-    if(drawLines) 
-        ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1, ...))
+    if(drawLines) {
+        ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1, ...), SIMPLIFY = FALSE)
+        tmp = do.call(rbind, ans)
+        drawLines(tmp[, 1:2], tmp[[3]])
+        return(invisible(ans))
+    }
 }
 
 stripCommonPrefix =
@@ -76,7 +80,7 @@ function(elInfo, left, right, bottom, top = 1,
     if(length(color) != nrow(coords))
         color = rep(color, each = 3)
 
-    drawLines(coords, col = color, ...)
+    cbind(as.data.frame(coords), color = color)
 }
 
 computeFileLineCoords =
