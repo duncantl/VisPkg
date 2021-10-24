@@ -83,9 +83,8 @@ isConstantOrCall =
     # FALSE
     #  - foo(x) 
 function(e)    
-{
   is.call(e) && length(e) == 2 && (isLiteral(e[[2]]) || is.name(e[[2]]))
-}
+
 
 
 ###
@@ -105,25 +104,64 @@ TypeColorMap =
       NULL = "red3"
       )
 
-getToplevelTypeDF =
-function(file)
+#getToplevelTypeDF =
+getToplevelTypes =
+function(file, asDataFrame = TRUE, colorMap = TypeColorMap)
 {
+    if(file.info(file)$isdir)
+        file = getRFiles(file)
+
+    if(length(file) > 1) {
+        ans = lapply(file, getToplevelTypeDF)
+        if(asDataFrame) {
+            ans = as(ans, "MultiFileToplevelTypeInfo")
+#            ans = do.call(rbind, ans)
+#            class(ans) = c("MultiFileToplevelTypeInfo", "ToplevelTypeInfo", "data.frame")
+        } else {
+            names(ans) = file
+            class(ans) = "ToplevelTypeInfoList"
+        }
+        return(ans)
+    }
+    
     tmp = toplevelTypes(file)
-    data.frame(len = rep(1, length(tmp)),
-               color = TypeColorMap[tmp],
-               type = tmp)
+    structure(data.frame(len = rep(1, length(tmp)),
+                         color = colorMap[tmp],
+                         type = tmp, file = rep(file, length(tmp))),
+              class = c("ToplevelTypeInfo", "data.frame"))
 }    
 
+setOldClass(c("MultiFileToplevelTypeInfo", "ToplevelTypeInfo", "data.frame", "list"))
+setOldClass(c("ToplevelTypeInfoList", "list"))
 
+setAs("ToplevelTypeInfoList", "data.frame", # "MultiFileToplevelTypeInfo",
+      function(from) {
+            ans = do.call(rbind, from)
+            class(ans) = if(length(from) > 1)
+                            c("MultiFileToplevelTypeInfo", "ToplevelTypeInfo", "data.frame")
+                         else
+                            c("ToplevelTypeInfo", "data.frame")
+            ans
+        })
+
+setAs("MultiFileToplevelTypeInfo", "list", # "ToplevelTypeInfoList",
+      function(from) {
+            ans = split(from, from$file)
+            ans = lapply(ans, function(x){
+                                  class(x) = c("ToplevelTypeInfo", "data.frame")
+                                  rownames(x) = NULL
+                                  x
+                              })          
+            class(ans) =  "ToplevelTypeInfoList"
+            ans
+      })
 
 ######################
 
 
 simpleLineType =
 function(file, lines = readLines(file))    
-{
-
-}
+{}
 
 
 
