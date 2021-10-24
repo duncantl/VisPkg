@@ -3,8 +3,13 @@ showFiles =
     #
     #
 function(dir = "", vals = computeFileInfo(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$", labelsAtTop = TRUE,
-         ..., drawLines = TRUE)
+         ..., drawLines = TRUE, main = dir)
 {
+    opar = par(no.readonly = TRUE)
+    on.exit(par(mar = opar$mar))
+
+    mkEmptyPlot(names(vals), main, labelsAtTop)
+    
     showFileOutlines(vals, main = dir, drawLines = drawLines, labelsAtTop = labelsAtTop, ...)
 }
 
@@ -17,13 +22,8 @@ function(files)
 a}
 
 showFileOutlines =
-function(vals, main = "", drawLines = TRUE, labelsAtTop = TRUE, ...)
+function(vals, drawLines = TRUE, ...)
 {
-    opar = par(no.readonly = TRUE)
-    on.exit(par(mar = opar$mar))
-
-    mkEmptyPlot(names(vals), main, labelsAtTop)
-    
     x0 = seq(.5, by = 1, length = length(vals))
 
     nlines = sapply(vals, function(x) if(is.data.frame(x)) nrow(x) else length(x))
