@@ -24,16 +24,13 @@ function(vals, main = "", drawLines = TRUE, ...)
     mkEmptyPlot(names(vals), main)
     
     x0 = seq(.5, by = 1, length = length(vals))
-#    nlines = sapply(vals, length)
+
     nlines = sapply(vals, function(x) if(is.data.frame(x)) nrow(x) else length(x))
     bottom = 1 - nlines/max(nlines)
     rect(x0, bottom, x0 + 1, rep(1, length(vals)))
 
-    if(drawLines) {
+    if(drawLines) 
         ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1, ...))
-        #ans = do.call(rbind, ans)
-        #lines(ans)
-    }
 }
 
 mkEmptyPlot =
@@ -56,7 +53,6 @@ function(elInfo, left, right, bottom, top = 1,
     if(length(color) != nrow(coords))
         color = rep(color, each = 3)
 
-    # lines(coords, col = color)
     drawLines(coords, col = color, ...)
 }
 
