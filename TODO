@@ -1,0 +1,14 @@
+Rectangles for the top-level types and remove the gaps.
+
+Identify S3 generics - have to look in the body not just isFunAssign
+
+Identify S3 methods - either from NAMESPACE, getNamespace() or based on names but not knowing what classes there are.
+
+Other "line" information measures
+
+2 plots above and below for many files.
+
+Exporting information to JavaScript do display there.
+ or htmlwidgets?...
+
+Class hierarchies
