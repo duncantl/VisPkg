@@ -2,14 +2,15 @@ showFiles =
     #
     #
     #
- function(dir = "", vals = computeFileInfo(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$", labelsAtTop = TRUE,
+function(dir = "", vals = computeFileInfo(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$",
+         labelsAtTop = TRUE, labels = stripCommonPrefix(names(vals)),
          legend = TRUE,             
          ..., drawLines = TRUE, main = dir)
 {
     opar = par(no.readonly = TRUE)
     on.exit(par(mar = opar$mar))
 
-    mkEmptyPlot(names(vals), main, labelsAtTop)
+    mkEmptyPlot(labels, main, labelsAtTop)
     
     showFileOutlines(vals, main = dir, drawLines = drawLines, labelsAtTop = labelsAtTop, ...)
 #    if(!missing(legend) || isTRUE(legend))
@@ -29,6 +30,21 @@ function(vals, drawLines = TRUE, ...)
 
     if(drawLines) 
         ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1, ...))
+}
+
+stripCommonPrefix =
+function(vals)    
+{
+      # See if they are all in the same directory before requiring Rlibstree be available.
+    pre = dirname(vals)
+    if(length(unique(pre)) == 1)
+        return(basename(vals))
+
+    pre = Rlibstree::getCommonPrefix(vals)
+    if(length(pre))
+        substring(vals, nchar(pre) + 1L)
+    else
+        vals
 }
 
 mkEmptyPlot =
