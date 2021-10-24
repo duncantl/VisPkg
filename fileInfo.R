@@ -106,7 +106,7 @@ TypeColorMap =
 
 #getToplevelTypeDF =
 getToplevelTypes =
-function(file, asDataFrame = TRUE, colorMap = TypeColorMap)
+function(file, asDataFrame = FALSE, colorMap = TypeColorMap)
 {
     if(file.info(file)$isdir)
         file = getRFiles(file)
