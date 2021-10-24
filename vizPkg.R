@@ -2,9 +2,10 @@ showFiles =
     #
     #
     #
-function(dir, vals = computeFileInfo(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$", ..., drawLines = TRUE)
+function(dir = "", vals = computeFileInfo(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$", labelsAtTop = TRUE,
+         ..., drawLines = TRUE)
 {
-    showFileOutlines(vals, main = dir, drawLines = drawLines, ...)
+    showFileOutlines(vals, main = dir, drawLines = drawLines, labelsAtTop = labelsAtTop, ...)
 }
 
 computeFileInfo =
@@ -13,15 +14,15 @@ function(files)
     vals = lapply(files, function(f) structure(nchar(readLines(f)), class = "FileLineLength"))
     names(vals) = basename(files)
     vals
-}
+a}
 
 showFileOutlines =
-function(vals, main = "", drawLines = TRUE, ...)
+function(vals, main = "", drawLines = TRUE, labelsAtTop = TRUE, ...)
 {
     opar = par(no.readonly = TRUE)
     on.exit(par(mar = opar$mar))
 
-    mkEmptyPlot(names(vals), main)
+    mkEmptyPlot(names(vals), main, labelsAtTop)
     
     x0 = seq(.5, by = 1, length = length(vals))
 
@@ -34,13 +35,22 @@ function(vals, main = "", drawLines = TRUE, ...)
 }
 
 mkEmptyPlot =
-function(fileNames, main = "")
+function(fileNames, main = "", labelsAtTop = TRUE)
 {
     nc = max(nchar(fileNames))
-    par(mar = c(floor(nc/3), 1, 2, 1))
+    mar = c(floor(nc/3), 1, 2, 1)
+    if(labelsAtTop) {
+        mar[3] = mar[1] + 2
+        mar[1] = 1
+        y = par("usr")[4]*1.01
+    } else
+        par("usr")[3]*1.2
+    
+    par(mar = mar)
     plot(0, xlim = c(1, length(fileNames)), ylim = c(0, 1), type = "n", axes = FALSE, xlab = "", ylab = "", main = main)
     box()
-    text(labels = fileNames, x = 1:length(fileNames), y = par("usr")[3]*1.2, xpd = NA, srt = 45, adj = 1)
+
+    text(labels = fileNames, x = 1:length(fileNames), y = y, xpd = NA, srt = 45, adj = if(labelsAtTop) 0 else 1)
 }
 
 
