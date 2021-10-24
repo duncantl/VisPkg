@@ -112,9 +112,9 @@ function(file, asDataFrame = TRUE, colorMap = TypeColorMap)
         file = getRFiles(file)
 
     if(length(file) > 1) {
-        ans = lapply(file, getToplevelTypeDF)
+        ans = lapply(file, getToplevelTypes)
         if(asDataFrame) {
-            ans = as(ans, "MultiFileToplevelTypeInfo")
+            ans = as(ans, "data.frame") # MultiFileToplevelTypeInfo")
 #            ans = do.call(rbind, ans)
 #            class(ans) = c("MultiFileToplevelTypeInfo", "ToplevelTypeInfo", "data.frame")
         } else {
