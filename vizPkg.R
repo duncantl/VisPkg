@@ -2,7 +2,8 @@ showFiles =
     #
     #
     #
-function(dir = "", vals = computeFileInfo(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$", labelsAtTop = TRUE,
+ function(dir = "", vals = computeFileInfo(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$", labelsAtTop = TRUE,
+         legend = TRUE,             
          ..., drawLines = TRUE, main = dir)
 {
     opar = par(no.readonly = TRUE)
@@ -11,15 +12,11 @@ function(dir = "", vals = computeFileInfo(files), files = getRFiles(dir, pattern
     mkEmptyPlot(names(vals), main, labelsAtTop)
     
     showFileOutlines(vals, main = dir, drawLines = drawLines, labelsAtTop = labelsAtTop, ...)
+#    if(!missing(legend) || isTRUE(legend))
+#        mkLegend(legend, vals)
 }
 
-computeFileInfo =
-function(files)    
-{
-    vals = lapply(files, function(f) structure(nchar(readLines(f)), class = "FileLineLength"))
-    names(vals) = basename(files)
-    vals
-a}
+
 
 showFileOutlines =
 function(vals, drawLines = TRUE, ...)
@@ -94,6 +91,13 @@ function(elInfo, left, right, bottom, top = 1)
 
 
 drawLines =
+    #
+    # Draws the lines specified in the coords matrix
+    # but groups these into separate calls based on the
+    # colors specified in col
+    # This is because lines() only uses the first color
+    # and is not vectorized in the col parameter.
+    #
 function(coords, col = coords[, 3], ...)    
 {
     groups =  split(1:length(col), col)
