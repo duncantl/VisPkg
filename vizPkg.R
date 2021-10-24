@@ -2,7 +2,7 @@ origShowFiles =
     #
     #
     #
-function(dir = "", vals = computeFileInfo(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$",
+function(dir = "", vals = getLineLengths(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$",
          labelsAtTop = TRUE, labels = stripCommonPrefix(names(vals)),
          legend = TRUE,             
          ..., drawLines = TRUE, main = dir)

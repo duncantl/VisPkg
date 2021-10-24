@@ -1,4 +1,4 @@
-computeFileInfo =
+computeFileInfo = getLineLengths =
     #
     # Computes the line length for each file.
     # This was the initial information we computed for each file.

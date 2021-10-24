@@ -6,6 +6,10 @@ plot.MultiFileToplevelTypeInfo =
 function(x, ...)
     plot(as(x, "list"), ...)
 
+plot.FileLineLengthInfo =
+function(x, ...)
+    showFiles(vals = x, ...)
+
 showFiles =
 function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(vals)),
          legend = TRUE,             
@@ -38,7 +42,7 @@ function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
 
 showFiles.character =
 function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
-         legend = TRUE, FUN = computeFileInfo,  pattern = "\\.[RrSsQq]$",
+         legend = TRUE, FUN = getLineLengths,  pattern = "\\.[RrSsQq]$",
          ..., drawLines = TRUE, main = character())
 {
     i = file.info(info)
