@@ -30,9 +30,9 @@ function(vals, main = "", drawLines = TRUE, ...)
     rect(x0, bottom, x0 + 1, rep(1, length(vals)))
 
     if(drawLines) {
-        ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1))
-        ans = do.call(rbind, ans)
-        lines(ans)
+        ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1, ...))
+        #ans = do.call(rbind, ans)
+        #lines(ans)
     }
 }
 
@@ -49,14 +49,15 @@ function(fileNames, main = "")
 
 showFileElements =
 function(elInfo, left, right, bottom, top = 1,
-         color = if(is.data.frame(elInfo)) elInfo[,2] else "black")
+         color = if(is.data.frame(elInfo)) elInfo[,2] else "black", ...)
 {
     coords = computeFileLineCoords(elInfo, left, right, bottom, top = top)
     
     if(length(color) != nrow(coords))
         color = rep(color, each = 3)
 
-    lines(coords, col = color)
+    # lines(coords, col = color)
+    drawLines(coords, col = color, ...)
 }
 
 computeFileLineCoords =
@@ -84,3 +85,16 @@ function(elInfo, left, right, bottom, top = 1)
     cbind(x, y)
 }
 
+
+
+drawLines =
+function(coords, col = coords[, 3], ...)    
+{
+    groups =  split(1:length(col), col)
+    # Could do this with by(), tapply(), aggregate()
+    mapply(function(idx, col) {
+             lines(coords[idx, 1:2], col = col, ...)
+           }, groups, names(groups))
+   
+}
+    
