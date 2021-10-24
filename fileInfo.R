@@ -1,3 +1,18 @@
+computeFileInfo =
+    #
+    # Computes the line length for each file.
+    # This was the initial information we computed for each file.
+    # The name should change to reflect what it measures.
+    #
+function(files)    
+{
+    vals = lapply(files, function(f) structure(nchar(readLines(f)), class = "FileLineLength"))
+    names(vals) = basename(files)
+    vals
+}
+
+##########
+
 toplevelTypes =
     # why hoist code - in case we parse(text = "....")
 function(file, code = parse(file))
@@ -74,12 +89,21 @@ function(e)
 
 
 ###
-TypeColorMap = c(call = "black", data = "green", "function" = "blue", "if" = "yellow",
-   ifTRUE = "grey", ifFALSE = "red",
-   NULL = "black",
-   S3OldClass = "orange", S4Class = "purple", S4method = "salmon", S4As = "pink",
-   S4generic = "navy",
-   symbol = "black")
+TypeColorMap =
+    c(call = "black",
+      data = "red",
+      "function" = "green",
+      S4method = "lightseagreen",
+      S4As = "green4",
+      S4generic = "darkolivegreen",
+      S4Class = "purple",
+      S3OldClass = "purple4",      
+      "if" = "yellow",
+      symbol = "gold",
+      ifTRUE = "grey",
+      ifFALSE = "red",
+      NULL = "red3"
+      )
 
 getToplevelTypeDF =
 function(file)
