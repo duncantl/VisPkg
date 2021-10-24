@@ -8,6 +8,7 @@ function(files)
 {
     vals = lapply(files, function(f) structure(nchar(readLines(f)), class = "FileLineLength"))
     names(vals) = basename(files)
+    class(vals) = "FileLineLengthInfo"
     vals
 }
 
