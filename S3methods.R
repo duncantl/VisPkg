@@ -45,10 +45,7 @@ function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
          legend = TRUE, FUN = getLineLengths,  pattern = "\\.[RrSsQq]$",
          ..., drawLines = TRUE, main = character())
 {
-    i = file.info(info)
-    if(any(i$isdir))
-        info = c(info[!i$isdir], unlist(lapply(info[i$isdir], getRFiles, pattern = pattern)))
-
+    info = xpdFileNames(info)
     info = FUN(info)
     showFiles(info, labelsAtTop = labelsAtTop, labels = labels, legend = legend, ..., drawLines = drawLines, main = main)
 }
@@ -58,3 +55,24 @@ function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
 function(x, i, j, ...)
    structure(NextMethod(), class = class(x))
 
+
+xpdFileNames =
+    #
+    # e.g. xpdFileNames(c("VisPkg/S3methods.R", dir, "VisPkg/fileInfo.R"), order = TRUE)
+    #
+function(info, pattern = '\\.[RrSsQq]$', order = FALSE) # add recursive = TRUE/FALSE
+{
+    i = file.info(info)
+    if(any(i$isdir)) {
+        tmp = lapply(info[i$isdir], getRFiles, pattern = pattern)
+        if(!order)
+            info = c(info[!i$isdir], unlist(tmp))
+        else {
+            info = as.list(info)
+            info[i$isdir] = tmp
+            info = unlist(info)
+        }
+    }
+
+    info
+}
