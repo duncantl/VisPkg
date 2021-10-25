@@ -1,17 +1,20 @@
-Rectangles rather than lines for the top-level types?  and remove the gaps between the lines/rectangles.
++ Rectangles rather than lines for the top-level types?  and remove the gaps between the lines/rectangles.
 
-Identify S3 generics - have to look in the body not just isFunAssign
++ Identify S3 generics - have to look in the body not just isFunAssign
 
-Identify S3 methods - either from NAMESPACE, getNamespace() or based on names but not knowing what classes there are.
++ Identify S3 methods - either from NAMESPACE, getNamespace() or based on names but not knowing what classes there are.
 
-add legend
++ add legend
 
-Class hierarchies
++ order the rectangles by overall size of each file.
 
-Other "line" information measures
++ Class hierarchies
 
-2 plots above and below for many files.
++ Other "line" information measures
+  - changes to lines
+  
++ 2 plots above and below for many files.
 
-Exporting information to JavaScript do display there.
++ Exporting information to JavaScript do display there.
  or htmlwidgets?...
 
