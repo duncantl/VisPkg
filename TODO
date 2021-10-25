@@ -1,8 +1,12 @@
-Rectangles for the top-level types and remove the gaps.
+Rectangles rather than lines for the top-level types?  and remove the gaps between the lines/rectangles.
 
 Identify S3 generics - have to look in the body not just isFunAssign
 
 Identify S3 methods - either from NAMESPACE, getNamespace() or based on names but not knowing what classes there are.
+
+add legend
+
+Class hierarchies
 
 Other "line" information measures
 
@@ -11,4 +15,3 @@ Other "line" information measures
 Exporting information to JavaScript do display there.
  or htmlwidgets?...
 
-Class hierarchies
