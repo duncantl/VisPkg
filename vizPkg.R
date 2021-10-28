@@ -4,15 +4,15 @@ origShowFiles =
     #
 function(dir = "", vals = getLineLengths(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$",
          labelsAtTop = TRUE, labels = stripCommonPrefix(names(vals)),
-         legend = TRUE,             
+         legend = TRUE, cex = 1, mar = NA,
          ..., drawLines = TRUE, main = dir)
 {
     opar = par(no.readonly = TRUE)
     on.exit(par(mar = opar$mar))
 
-    mkEmptyPlot(labels, main, labelsAtTop)
+    mkEmptyPlot(labels, main, labelsAtTop, cex = cex, mar = mar)
     
-    showFileOutlines(vals, main = dir, drawLines = drawLines, labelsAtTop = labelsAtTop, ...)
+    showFileOutlines(vals, main = dir, drawLines = drawLines, ...)
 #    if(!missing(legend) || isTRUE(legend))
 #        mkLegend(legend, vals)
 }
@@ -31,7 +31,7 @@ function(vals, drawLines = TRUE, ...)
     if(drawLines) {
         ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1, ...), SIMPLIFY = FALSE)
         tmp = do.call(rbind, ans)
-        drawLines(tmp[, 1:2], tmp[[3]])
+        drawLines(tmp[, 1:2], tmp[[3]], ...)
         return(invisible(ans))
     }
 }
@@ -52,10 +52,16 @@ function(vals)
 }
 
 mkEmptyPlot =
-function(fileNames, main = "", labelsAtTop = TRUE)
+function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, ...)
 {
-    nc = max(nchar(fileNames))
-    mar = c(floor(nc/3), 1, 2, 1)
+    if(is.na(mar)) {
+        nc = max(nchar(fileNames))
+        mar = floor(nc/3)
+    }
+    if(length(mar) == 1)
+        mar = c(mar, 1, 2, 1)
+    # otherwise, mar better be of length 4
+
     if(labelsAtTop) {
         mar[3] = mar[1] + 2
         mar[1] = 1
@@ -67,7 +73,7 @@ function(fileNames, main = "", labelsAtTop = TRUE)
     plot(0, xlim = c(1, length(fileNames)), ylim = c(0, 1), type = "n", axes = FALSE, xlab = "", ylab = "", main = main)
     box()
 
-    text(labels = fileNames, x = 1:length(fileNames), y = y, xpd = NA, srt = 45, adj = if(labelsAtTop) 0 else 1)
+    text(labels = fileNames, x = 1:length(fileNames), y = y, xpd = NA, srt = 45, adj = if(labelsAtTop) 0 else 1, ...)
 }
 
 
