@@ -1,6 +1,9 @@
 plot.ToplevelTypeInfoList =
 function(x, ...)
-    showFiles(vals = x, ...)
+    showFiles(x, ...)    
+#could have been
+#   origShowFiles(vals = x, ...)
+# but this is better. (Why?)
 
 plot.MultiFileToplevelTypeInfo =
 function(x, ...)
