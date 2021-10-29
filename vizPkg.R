@@ -52,15 +52,16 @@ function(vals)
 }
 
 mkEmptyPlot =
-function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, ...)
+function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, cex = 1, ...)
 {
     if(is.na(mar)) {
         nc = max(nchar(fileNames))
-        mar = floor(nc/3)
+        mar = floor(cex*nc/3) # get correct scaling for cex and number of lines.
     }
     if(length(mar) == 1)
         mar = c(mar, 1, 2, 1)
-    # otherwise, mar better be of length 4
+    # otherwise, mar better be of length 4. We don't need to raise an error as
+    # par(mar = mar) will if it is not of length 4.
 
     if(labelsAtTop) {
         mar[3] = mar[1] + 2
@@ -73,8 +74,9 @@ function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, ...)
     plot(0, xlim = c(1, length(fileNames)), ylim = c(0, 1), type = "n", axes = FALSE, xlab = "", ylab = "", main = main)
     box()
 
-    text(labels = fileNames, x = 1:length(fileNames), y = y, xpd = NA, srt = 45, adj = if(labelsAtTop) 0 else 1, ...)
+    text(labels = fileNames, x = 1:length(fileNames), y = y, xpd = NA, srt = 45, adj = if(labelsAtTop) 0 else 1, cex = cex, ...)
 }
+
 
 
 showFileElements =
@@ -134,3 +136,20 @@ function(coords, col = coords[, 3], ...)
    
 }
     
+
+
+
+mkLegend =
+function(x, colorMap = TypeColorMap, order = FALSE)
+{
+    # if order is TRUE or is an integer
+#    if(is.logical(order) && order)
+#        order = order()
+    types = unique(unlist(lapply(x, `[[`, "type")))
+    m = match(types, names(colorMap))
+        # Compute location based on the heights of the rectangles
+        # so we find blank areas.
+        # if none, then should have put this beside the plot which
+        # is quite a different strategy.
+    legend(1, .4, legend = names(colorMap)[m], fill = colorMap[m])
+}
