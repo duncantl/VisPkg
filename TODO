@@ -1,12 +1,40 @@
-+ Rectangles rather than lines for the top-level types?  and remove the gaps between the lines/rectangles.
++ labels not positioned correctly in a pdf() graphics device. Too low so below the box
 
-+ Identify S3 generics - have to look in the body not just isFunAssign
++ Rectangles rather than lines for the top-level types?  and remove the gaps between the lines/rectangles.
+   + the can vectorize the color argument.
+
++ [check] Identify S3 generics - have to look in the body not just isFunAssign
 
 + Identify S3 methods - either from NAMESPACE, getNamespace() or based on names but not knowing what classes there are.
+   + √ find NextMethod
 
-+ add legend
++ [check] added name column to data.frame for top-level elements
 
-+ order the rectangles by overall size of each file.
++ allow mapping of colors in call or do we do this on the Toplevel
+
++ add legend for colored/top-level plot.
+   + in separate are on side of plot or in the plot area.
+   + part of showFiles.ToplevelTypeInfoList as a call to mkLegend.
+```
+ty = getToplevelTypes("~/GitWorkingArea/Rllvm/R")
+plot(ty[!grepl("z_enum", names(ty))])
+legend(1, .4, legend = names(TypeColorMap), fill = TypeColorMap)
+```
+```
+plot(ty[!grepl("z_enum", names(ty))])
+types = unique(unlist(lapply(ty, `[[`, "type")))
+m = match(types, names(TypeColorMap))
+legend(1, .4, legend = names(TypeColorMap)[m], fill = TypeColorMap[m])
+```
+
++ allow ordering the rectangles by overall size of each file.
+   + user can order them if they compute the information ahead of the call.
+      showFiles(lnz[order(sapply(lnz, length))], cex = .7, lwd = 4, lend = 1, mar = 4); title("Rllvm", line = 3)
+   + but order = TRUE/FALSE     
+
++ cex etc. for labels
+   - take into account for computing margin.
+   - √ passed to mkEmptyPlot()
 
 + Class hierarchies
 
@@ -18,3 +46,5 @@
 + Exporting information to JavaScript do display there.
  or htmlwidgets?...
 
++ √ lwd doesn't seem to work any more.
+   - wasn't passing ... to drawLines() call in showFileOutlines() now that it is doing the drawing again.
