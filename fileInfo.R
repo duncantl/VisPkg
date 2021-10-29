@@ -31,19 +31,19 @@ TypeColorMap =
     c(call = "black",
       data = "red",
       "function" = "green",
-      S4method = "lightseagreen",
-      S3method = "darkseagreen1",      
-      S4As = "green4",
-      S4generic = "mediumseagreen",      
-      S3generic = "darkolivegreen",
-      S4Class = "purple",
-      S3OldClass = "purple4",      
       "if" = "yellow",
-      symbol = "gold",
       ifTRUE = "grey",
       ifFALSE = "red",
-      NULL = "red3"
-      )
+      NULL = "red3",   
+      S4Class = "purple",
+      S4generic = "mediumseagreen",      
+      S4method = "lightseagreen",
+      S4As = "green4",
+      S3OldClass = "purple4",
+      S3generic = "darkolivegreen",
+      S3method = "darkseagreen1",
+      symbol = "gold"
+     )
 
 #getToplevelTypeDF =
 getToplevelTypes =
