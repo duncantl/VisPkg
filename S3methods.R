@@ -48,7 +48,7 @@ function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
          legend = TRUE, FUN = getLineLengths,  pattern = "\\.[RrSsQq]$",
          ..., drawLines = TRUE, main = character())
 {
-    info = xpdFileNames(info)
+    info = xpdFileNames(info, pattern)
     info = FUN(info)
     showFiles(info, labelsAtTop = labelsAtTop, labels = labels, legend = legend, ..., drawLines = drawLines, main = main)
 }
