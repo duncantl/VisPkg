@@ -7,10 +7,7 @@ function(dir = "", vals = getLineLengths(files), files = getRFiles(dir, pattern)
          legend = TRUE, cex = 1, mar = NA,
          ..., drawLines = TRUE, main = dir)
 {
-    opar = par(no.readonly = TRUE)
-    on.exit(par(mar = opar$mar))
-
-    mkEmptyPlot(labels, main, labelsAtTop, cex = cex, mar = mar)
+    mkEmptyPlot(labels, main, labelsAtTop, cex = cex, mar = mar, ...)
     
     showFileOutlines(vals, main = dir, drawLines = drawLines, ...)
 #    if(!missing(legend) || isTRUE(legend))
@@ -55,6 +52,9 @@ function(vals)
 mkEmptyPlot =
 function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, cex = 1, ...)
 {
+    opar = par(no.readonly = TRUE)
+    on.exit(par(mar = opar$mar))
+        
     if(is.na(mar)) {
         nc = max(nchar(fileNames))
         mar = floor(cex*nc/3) # get correct scaling for cex and number of lines.
@@ -72,7 +72,7 @@ function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, cex = 1, ...)
         par("usr")[3]*1.2
     
     par(mar = mar)
-    plot(0, xlim = c(1, length(fileNames)), ylim = c(0, 1), type = "n", axes = FALSE, xlab = "", ylab = "", main = main)
+    plot(0, xlim = c(1, length(fileNames)), ylim = c(0, 1), yaxs = "i", type = "n", axes = FALSE, xlab = "", ylab = "", main = main, ...)
     box()
 
     text(labels = fileNames, x = 1:length(fileNames), y = y, xpd = NA, srt = 45, adj = if(labelsAtTop) 0 else 1, cex = cex, ...)
