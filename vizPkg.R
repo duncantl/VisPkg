@@ -20,7 +20,7 @@ function(dir = "", vals = getLineLengths(files), files = getRFiles(dir, pattern)
 
 
 showFileOutlines =
-function(vals, drawLines = TRUE, ...)
+function(vals, drawLines = TRUE, border = NULL, ...)
 {
     x0 = seq(.5, by = 1, length = length(vals))
 
@@ -31,7 +31,8 @@ function(vals, drawLines = TRUE, ...)
     if(drawLines) {
         ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1, ...), SIMPLIFY = FALSE)
         tmp = do.call(rbind, ans)
-        drawLines(tmp[, 1:2], tmp[[3]], ...)
+        # drawLines(tmp[, 1:2], tmp[[3]], ...)
+        rect(tmp[,1], tmp[,2], tmp[,3], tmp[,4], col = tmp[[5]], border = border, ...)        
         return(invisible(ans))
     }
 }
@@ -84,13 +85,32 @@ function(elInfo, left, right, bottom, top = 1,
          color = if(is.data.frame(elInfo)) elInfo[,2] else "black", ...)
 {
     coords = computeFileLineCoords(elInfo, left, right, bottom, top = top)
-    
+
     if(length(color) != nrow(coords))
-        color = rep(color, each = 3)
+        color = rep(color, nrow(coords))  # each = 3)
 
     cbind(as.data.frame(coords), color = color)
 }
 
+computeFileLineCoords =
+function(elInfo, left, right, bottom, top = 1)
+{
+    if(is.data.frame(elInfo))
+        elInfo = elInfo[,1]
+
+    len = length(elInfo)
+
+    x0 = rep(left, len)
+    x1 = left + (right - left)*elInfo/max(elInfo)    
+
+    tmp = seq(top, bottom, length = len + 1L)
+    y1 = tmp[- (len + 1L)]
+    y0 = tmp[-1]
+    
+    cbind(x0, y0, x1, y1)
+}
+
+if(FALSE) {
 computeFileLineCoords =
 function(elInfo, left, right, bottom, top = 1)
 {
@@ -115,7 +135,7 @@ function(elInfo, left, right, bottom, top = 1)
       
     cbind(x, y)
 }
-
+}
 
 
 drawLines =

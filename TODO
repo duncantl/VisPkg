@@ -48,3 +48,30 @@ legend(1, .4, legend = names(TypeColorMap)[m], fill = TypeColorMap[m])
 
 + √ lwd doesn't seem to work any more.
    - wasn't passing ... to drawLines() call in showFileOutlines() now that it is doing the drawing again.
+
+
+
+
+When switching to rectangles.
+
+ Nervous about making change and breaking things.
+  copy file
+  or use version control and branch
+  make certain to commit any changes before branching
+
+ + changes
+    +  Change body of computeLineCoords to create 4-column rectangles.
+       + No need for the NA rows - each line in the file is now a row in the matrix.
+       +  Can draw rectangles with different colors in same call, i.e. vectorized in color.
+    + change showFileELements to rep(color, nrow(coords)) not each = 3 as for the lines.
+    + showFileOutlines - now calls rect() rather than drawLines().
+    
+  When very large file with lots of top-level elements, looks black even though rect(, col = tmp[[5]])
+   really is a collection of colors.
+   Drop the big files. See the rectangles.
+   
+   So for the big files, There are too many and all we see are the borders.
+     So use border = NA to not draw the borders of the rectangles.
+
+   + add border = NULL (default value for rect()) and pass this down from showFiles()/plot() to control how the rectangle borders are rendered.
+
