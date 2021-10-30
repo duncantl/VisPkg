@@ -4,7 +4,7 @@ origShowFiles =
     #
 function(dir = "", vals = getLineLengths(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$",
          labelsAtTop = TRUE, labels = stripCommonPrefix(names(vals)),
-         legend = TRUE, cex = 1, mar = NA,
+         legend = TRUE, cex = 1, mar = NA, 
          ..., drawLines = TRUE, main = dir)
 {
     mkEmptyPlot(labels, main, labelsAtTop, cex = cex, mar = mar, ...)
@@ -50,32 +50,37 @@ function(vals)
 }
 
 mkEmptyPlot =
-function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, cex = 1, ...)
+function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, cex = 1, srt = 45, ...)
 {
     opar = par(no.readonly = TRUE)
     on.exit(par(mar = opar$mar))
         
     if(is.na(mar)) {
-        nc = max(nchar(fileNames))
-        mar = floor(cex*nc/3) # get correct scaling for cex and number of lines.
+        # nc = max(nchar(fileNames))
+        nc = ceiling(sin(srt/180*pi)*cex*max(nchar(fileNames))/3)
+        # old approach: ad hoc
+        # mar = floor(cex*nc/3) # get correct scaling for cex and number of lines.
+        mar = nc
     }
+    
     if(length(mar) == 1)
         mar = c(mar, 1, 2, 1)
     # otherwise, mar better be of length 4. We don't need to raise an error as
     # par(mar = mar) will if it is not of length 4.
 
     if(labelsAtTop) {
-        mar[3] = mar[1] + 2
+        mar[3] = mar[1] + 3 # extra 2 lines is for the title.
         mar[1] = 1
         y = par("usr")[4]*1.01
     } else
         par("usr")[3]*1.2
     
     par(mar = mar)
-    plot(0, xlim = c(1, length(fileNames)), ylim = c(0, 1), yaxs = "i", type = "n", axes = FALSE, xlab = "", ylab = "", main = main, ...)
+    plot(0, xlim = c(1, length(fileNames)), ylim = c(0, 1), yaxs = "i", type = "n", axes = FALSE, xlab = "", ylab = "", ...)
+    title(main, line = floor(par()$mar[3]) - 1)
     box()
 
-    text(labels = fileNames, x = 1:length(fileNames), y = y, xpd = NA, srt = 45, adj = if(labelsAtTop) 0 else 1, cex = cex, ...)
+    text(labels = fileNames, x = 1:length(fileNames), y = y, xpd = NA, srt = srt, adj = if(labelsAtTop) 0 else 1, cex = cex, ...)
 }
 
 

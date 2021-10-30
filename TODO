@@ -1,7 +1,6 @@
 + labels not positioned correctly in a pdf() graphics device. Too low so below the box
-
-+ Rectangles rather than lines for the top-level types?  and remove the gaps between the lines/rectangles.
-   + the can vectorize the color argument.
+  + same if set xaxs="i" and yaxs="i"
+  + seems to be fixed now.
 
 + [check] Identify S3 generics - have to look in the body not just isFunAssign
 
@@ -10,7 +9,8 @@
 
 + [check] added name column to data.frame for top-level elements
 
-+ allow mapping of colors in call or do we do this on the Toplevel
++ allow mapping of colors in call or do we do this on the computation of the Toplevel information
+   + connect to legend. i.e., 
 
 + add legend for colored/top-level plot.
    + in separate are on side of plot or in the plot area.
@@ -26,11 +26,20 @@ types = unique(unlist(lapply(ty, `[[`, "type")))
 m = match(types, names(TypeColorMap))
 legend(1, .4, legend = names(TypeColorMap)[m], fill = TypeColorMap[m])
 ```
+   + Do we put this in origShowFiles() or in the showFiles() methods.
+
 
 + allow ordering the rectangles by overall size of each file.
    + user can order them if they compute the information ahead of the call.
       showFiles(lnz[order(sapply(lnz, length))], cex = .7, lwd = 4, lend = 1, mar = 4); title("Rllvm", line = 3)
-   + but order = TRUE/FALSE     
+   + but allow for order = TRUE/FALSE      parameter
+      + If we add it to origShowFiles() we have to reorganize the list of file information before we draw the empty plot
+        and then ensure that we used the reordered list in showFileElements.
+        + would/might be easier if we had one big/long data.frame as we would arrange by the number per  file and then would map the files to the rectangle order.  Need to discuss this.
+	+ if we put this in the showFiles() methods for the different classes of info, we have to repeat.
+   	  +  need to abstract and compute the num elements of each  file and then do this centrally.
+	     x = x[order(sapply(x, numFileElements))]
+
 
 + cex etc. for labels
    - take into account for computing margin.
@@ -46,11 +55,26 @@ legend(1, .4, legend = names(TypeColorMap)[m], fill = TypeColorMap[m])
 + Exporting information to JavaScript do display there.
  or htmlwidgets?...
 
+
+# Done
+
 + √ lwd doesn't seem to work any more.
    - wasn't passing ... to drawLines() call in showFileOutlines() now that it is doing the drawing again.
 
++ √ Rectangles rather than lines for the top-level types?  and remove the gaps between the lines/rectangles.
+   + √ the can vectorize the color argument.
 
 
+#########################
+
+
++ Added srt to mkPlotEmpty so can control the rotation of the labels.
++ Compute length of line based on sin(angle) & cex
++ add extra space for title when labelsOnTop.
+
+
+
+############################
 
 When switching to rectangles.
 
@@ -75,3 +99,19 @@ When switching to rectangles.
 
    + add border = NULL (default value for rect()) and pass this down from showFiles()/plot() to control how the rectangle borders are rendered.
 
+
+
+
++ mkEmptyPlot
+  + want to control the axis expansion. In plot() So need to pass ... to plot()
+    + but also passed to text(). Potential problems.
+    + need to pass ... from showFiles() to mkEmptyPlot()
+      + but now border = NA gets passed to plot().  Doing too much with ... in too many places.
+    + Better to move the par() and on.exit() to mkEmptyPlot(). This allows us to call mkEmptyPlot() directly and the showFileOutlines()
+
+
++ With xaxs = yaxs = "i", the plot shows a large gap between the labels and the top of the plot.
+   We saw this earlier when creating the plot in pdf(). So there is a real issue and we now have two different 
+   ways to generate it.
+   + Should we use a different approach than xaxs = "i" or "r", i.e., set xlim and ylim.  If we use xaxs = "i", the last one or more labels
+   gets cut-off as the margins are too small.
