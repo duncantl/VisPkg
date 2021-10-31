@@ -1,6 +1,38 @@
-+ warnings from use of ... in multiple places and passing graphics arguments to incorrect functions.
++ allow mapping of colors in call or do we do this on the computation of the Toplevel information
+   + connect to legend. i.e.,
+   + What functions use the col argument to draw. And what functions call those all the way back up.
+     + can determine this manually  or programmaatically:  showFileOutlines,  showFileElements  and mkLegend
+     + We have all the drawing functions in vizPkg so easy to find although programmatic search makes this less relevant.
+     + Which functions call these functions that directly use the colors.
+     + mkLegend() takes a colorMap argument with a default value.
+   + Do we want the user to specify the colors or have a default for the type of object being plotted (R or C code) or both.
+   +
 
-+ labels not positioned correctly in a pdf() graphics device. Too low so below the box
+
++ warnings from use of ... in multiple places and passing graphics arguments to incorrect functions.
+```
+ showFiles(ty[!grepl("z_enum", names(ty))], xaxis = "i", srt = 60, main = "Bob", cex = .5)
+1: In plot.window(...) : "xaxis" is not a graphical parameter
+2: In plot.xy(xy, type, ...) : "xaxis" is not a graphical parameter
+3: In title(...) : "xaxis" is not a graphical parameter
+4: In text.default(labels = fileNames, x = 1:length(fileNames), y = y,  :
+  "xaxis" is not a graphical parameter
+5: In rect(tmp[, 1], tmp[, 2], tmp[, 3], tmp[, 4], col = tmp[[5]],  :
+  "xaxis" is not a graphical parameter
+```
+```
+showFiles(ty[!grepl("z_enum", names(ty))], xaxs = "i", border = NA)
+Warning messages:
+1: In plot.window(...) : "border" is not a graphical parameter
+2: In plot.xy(xy, type, ...) : "border" is not a graphical parameter
+3: In title(...) : "border" is not a graphical parameter
+4: In text.default(labels = fileNames, x = 1:length(fileNames), y = y,  :
+  "border" is not a graphical parameter
+```
+  + so xaxis and border.
+
+
++ [check] labels not positioned correctly in a pdf() graphics device. Too low so below the box
   + same if set xaxs="i" and yaxs="i"
   + seems to be fixed now.
 
@@ -19,8 +51,6 @@
 + [check] added name column to data.frame for top-level elements
   + check the names are correct/appropriate when deparse().
 
-+ allow mapping of colors in call or do we do this on the computation of the Toplevel information
-   + connect to legend. i.e., 
 
 + add legend for colored/top-level plot.
    + in separate are on side of plot or in the plot area.
@@ -39,7 +69,7 @@ legend(1, .4, legend = names(TypeColorMap)[m], fill = TypeColorMap[m])
    + Do we put this in origShowFiles() or in the showFiles() methods.
 
 
-+ allow ordering the rectangles by overall size of each file.
++ [check] allow ordering the rectangles by overall size of each file.
    + user can order them if they compute the information ahead of the call.
       showFiles(lnz[order(sapply(lnz, length))], cex = .7, lwd = 4, lend = 1, mar = 4); title("Rllvm", line = 3)
    + but allow for order = TRUE/FALSE      parameter
@@ -55,7 +85,7 @@ legend(1, .4, legend = names(TypeColorMap)[m], fill = TypeColorMap[m])
 
 
 + cex etc. for labels
-   - take into account for computing margin.
+   - [check] take into account for computing margin.
    - √ passed to mkEmptyPlot()
 
 + Class hierarchies
@@ -63,7 +93,7 @@ legend(1, .4, legend = names(TypeColorMap)[m], fill = TypeColorMap[m])
 + Other "line" information measures
   + changes to lines
   + C/C++ top-level items
-    + getToplevelNativeInfo
+    + [check] getToplevelNativeInfo
   
 + 2 plots above and below for many files.
 
