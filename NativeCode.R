@@ -75,10 +75,13 @@ if(FALSE)
     names(z2) = files
     # gets a 42x3 data.frame  But the types and names are mostly UnexposedDecl and ""
     # These are extern "C" declarations.
-
+    # Now fixed via the update function analyzing these.
     z3 = do.call(rbind, z2)
 
-    tu2 = createTU("~/GitWorkingArea/Rllvm/src/Block.cpp", includes = Rllvm.includes, args = Rllvm.args)
-    k = children(getTranslationUnitCursor(tu2))
-    ki = sapply(k, getCursorKind)
+
+    if(FALSE) {
+        tu2 = createTU("~/GitWorkingArea/Rllvm/src/Block.cpp", includes = Rllvm.includes, args = Rllvm.args)
+        k = children(getTranslationUnitCursor(tu2))
+        ki = sapply(k, getCursorKind)
+    }
 }
