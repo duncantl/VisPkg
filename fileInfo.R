@@ -15,12 +15,13 @@ function(files)
 ##########
 
 toplevelTypes =
-    # why hoist code - in case we parse(text = "....")
-function(file, names = TRUE, code = parse(file))
+    # why hoist code - in case we parse(text = "....").
+    # Then we can pass it via code argument.
+function(file, S3Methods = NULL, names = TRUE, code = parse(file))
 {
     # do we want the names of the objects
-    ans = unlist(sapply(code, getToplevelCodeType))
-    if(names)
+    ans = unlist(sapply(code, getToplevelCodeType, S3Methods))
+    if(names && length(code) > 0)
         names(ans) = sapply(code, getToplevelName)
 
     ans
@@ -28,12 +29,12 @@ function(file, names = TRUE, code = parse(file))
 
 ###
 TypeColorMap =
-    c(call = "black",
-      data = "red",
+    c(call = "orange",
+      data = "lightblue", # cyan
       "function" = "green",
       "if" = "yellow",
-      ifTRUE = "grey",
-      ifFALSE = "red",
+      "if(TRUE)" = "grey",
+      "if(FALSE)" = "red",
       NULL = "red3",   
       S4Class = "purple",
       S4generic = "mediumseagreen",      
@@ -45,15 +46,54 @@ TypeColorMap =
       symbol = "gold"
      )
 
+getS3Methods =
+    # x could be
+    #  1) a namespace object/environment
+    #  2) the name of a package
+    #  3) a directory name
+    #  4) a file name in the R directory
+    # 
+function(x)
+{
+    if(is.environment(x)) {
+        if(isNamespace(x))
+            return(getS3Methods(x$.__NAMESPACE__.))
+        
+        # Check if S3Methods exists. If none registered, maybe no entry.
+        return(x$S3methods)
+    } else if(is.character(x)) {
+        if(!file.exists(x))
+            return(getS3Methods(getNamespace(x)))
+
+        if(!file.info(x)$isdir)
+            return(getS3Methods(dirname(x)))
+
+        if(basename(x) %in% c("R", "src", "man"))
+            x = dirname(x)
+
+        getS3Methods(basename(x))
+    }
+
+    
+
+}
+
 #getToplevelTypeDF =
 getToplevelTypes =
-function(file, asDataFrame = FALSE, colorMap = TypeColorMap)
+    #
+    # ns = getNamespace("tools")
+    # ty = getToplevelTypes("~/R/R-new/src/library/tools/R", S3Methods = ns$.__NAMESPACE__.$S3methods)
+    # This identifies the S3 methods.
+    #
+    # Now finds the S3 methods from file.
+    #
+function(file, S3Methods = getS3Methods(file[1]), asDataFrame = FALSE, colorMap = TypeColorMap)
 {
     if(file.info(file)$isdir)
         file = getRFiles(file)
 
     if(length(file) > 1) {
-        ans = lapply(file, getToplevelTypes)
+        ans = lapply(file, getToplevelTypes, S3Methods, asDataFrame, colorMap)
         if(asDataFrame) {
             ans = as(ans, "data.frame") # MultiFileToplevelTypeInfo")
 #            ans = do.call(rbind, ans)
@@ -65,7 +105,7 @@ function(file, asDataFrame = FALSE, colorMap = TypeColorMap)
         return(ans)
     }
     
-    tmp = toplevelTypes(file)
+    tmp = toplevelTypes(file, S3Methods)
     structure(data.frame(len = rep(1, length(tmp)),
                          color = colorMap[tmp],
                          type = tmp, file = rep(file, length(tmp)),
@@ -109,3 +149,22 @@ function(file, lines = readLines(file))
 
 
 
+
+########################
+
+orderFiles =
+function(x, asIndices = FALSE)
+{
+    w = sapply(x, is.data.frame)
+
+    v = if(all(w))
+           sapply(x, nrow)
+        else
+            sapply(x, length)
+
+    o = order(v)    
+    if(asIndices)
+        o
+    else
+        x[o]        
+}
