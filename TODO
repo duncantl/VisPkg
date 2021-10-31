@@ -1,13 +1,23 @@
++ warnings from use of ... in multiple places and passing graphics arguments to incorrect functions.
+
 + labels not positioned correctly in a pdf() graphics device. Too low so below the box
   + same if set xaxs="i" and yaxs="i"
   + seems to be fixed now.
 
 + [check] Identify S3 generics - have to look in the body not just isFunAssign
 
-+ Identify S3 methods - either from NAMESPACE, getNamespace() or based on names but not knowing what classes there are.
++ [check] Identify S3 methods - either from NAMESPACE, getNamespace() or based on names but not knowing what classes there are.
+   + pass S3Methods matrix from namespace$.__NAMESPACE__.$S3Methods.
+   + Have this and the functions it calls pass this along.
+     + Started with user having to get this array from the namespace.
+     + Then we thought this was too awkward for the user so we implemented getS3Methods() and have it accept 4 different types of argument: environment, namespace, directory name, file name.
+     + Then we add this as the defailt value for S3Methods.
    + √ find NextMethod
+   + We can extend this so that if the package is not installed we compute the S3method declarations from the NAMESPACE file.
+     + We have to handle if(FALSE)
 
 + [check] added name column to data.frame for top-level elements
+  + check the names are correct/appropriate when deparse().
 
 + allow mapping of colors in call or do we do this on the computation of the Toplevel information
    + connect to legend. i.e., 
@@ -33,12 +43,15 @@ legend(1, .4, legend = names(TypeColorMap)[m], fill = TypeColorMap[m])
    + user can order them if they compute the information ahead of the call.
       showFiles(lnz[order(sapply(lnz, length))], cex = .7, lwd = 4, lend = 1, mar = 4); title("Rllvm", line = 3)
    + but allow for order = TRUE/FALSE      parameter
-      + If we add it to origShowFiles() we have to reorganize the list of file information before we draw the empty plot
+      + If we add it to origShowFiles() we have to
+          + reorganize the list of files information before we draw the empty plot
+          +  also reorganize the labels
         and then ensure that we used the reordered list in showFileElements.
         + would/might be easier if we had one big/long data.frame as we would arrange by the number per  file and then would map the files to the rectangle order.  Need to discuss this.
 	+ if we put this in the showFiles() methods for the different classes of info, we have to repeat.
    	  +  need to abstract and compute the num elements of each  file and then do this centrally.
 	     x = x[order(sapply(x, numFileElements))]
+          +  See orderFiles() function called from 
 
 
 + cex etc. for labels
@@ -48,7 +61,9 @@ legend(1, .4, legend = names(TypeColorMap)[m], fill = TypeColorMap[m])
 + Class hierarchies
 
 + Other "line" information measures
-  - changes to lines
+  + changes to lines
+  + C/C++ top-level items
+    + getToplevelNativeInfo
   
 + 2 plots above and below for many files.
 
@@ -100,6 +115,7 @@ When switching to rectangles.
    + add border = NULL (default value for rect()) and pass this down from showFiles()/plot() to control how the rectangle borders are rendered.
 
 
+   + when using rect(), we no longer need drawLines().  So remove this from the computation of lines of code.
 
 
 + mkEmptyPlot
@@ -115,3 +131,54 @@ When switching to rectangles.
    ways to generate it.
    + Should we use a different approach than xaxs = "i" or "r", i.e., set xlim and ylim.  If we use xaxs = "i", the last one or more labels
    gets cut-off as the margins are too small.
+
+
+
+
+
+################
+
+
+ getToplevelInfo("..../tools/R") returns 78 S3methods.
+ However, there are 115 in the $.__NAMESPACE__.$S3methods array.
+ Actually, there are only 78 unique values in the third column.
+ Since we map the assigned variable to the corresponding S3 method name in column 3, we should only end up with 78.
+
+ The methods in the NAMESPACE that map to functions with the non-default S3 method name don't appear in the code.
+ The are constructs of the NAMESPACE.  They are the elements in the NAMESPACE with 3 arguments to the call to S3method(),
+ i.e., the generic, the class and the name of the function which is to be used as the method, i.e. to be called when the method is dispatched.
+ There are 38 mappings/redirects to .print.via.format  (all others occur just once)
+
+ Parsing the namespace,
+``` 
+  ns = parse("~/R/R-new/src/library/tools/NAMESPACE")
+  ww = sapply(ns, function(e) is.call(e) && is.name(e[[1]]) && as.character(e[[1]]) == "S3method")
+```
+There are 115 calls to S3method, as we expect.
+  38 of these have 4 elements, i.e., 3 arguments.
+```
+table(sapply(ns[ww][sapply(ns[ww], length) == 4], function(x) deparse(x[[4]])))
+```
+All of these map/redirect to .print.via.format.
+
+As an aside, there are 59 print methods, 46 format methods
+
+
+```
+ty = getToplevelTypes("~/R/R-new/src/library/tools/R")
+ty2 = do.call(rbind, ty)
+w = ty2$type == "S3method"
+
+table(w)
+```
+
+
+So why do we have 78 S3methods in the top-level types, but only 77 S3 methods in the namespace.
+The reason is that .print.via.format is identified as an S3 method in the top-level types
+but is actually a regular function.
+It is because it is in the S3 method declarations in the NAMESPACE that we map it to an S3method in the top-level types.
+If we didn't, we would have 77 and these would correspond to the regular 77 S3method declarations in the NAMESPACE
+that also map to the regular S3-method name of generic.class.  So all matches as expected.
+
+
+
