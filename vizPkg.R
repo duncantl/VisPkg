@@ -64,13 +64,11 @@ function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, cex = 1, srt = 45, 
     opar = par(no.readonly = TRUE)
     on.exit(par(mar = opar$mar))
         
-    if(is.na(mar)) {
+    if(is.na(mar)) 
         # nc = max(nchar(fileNames))
-        nc = ceiling(sin(srt/180*pi)*cex*max(nchar(fileNames))/3)
+        mar = ceiling(sin(srt/180*pi)*cex*max(nchar(fileNames))/3)
         # old approach: ad hoc
         # mar = floor(cex*nc/3) # get correct scaling for cex and number of lines.
-        mar = nc
-    }
     
     if(length(mar) == 1)
         mar = c(mar, 1, 2, 1)
@@ -85,7 +83,7 @@ function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, cex = 1, srt = 45, 
         par("usr")[3]*1.2
     
     par(mar = mar)
-    plot(0, xlim = c(1, length(fileNames)), ylim = c(0, 1), yaxs = "i", type = "n", axes = FALSE, xlab = "", ylab = "", ...)
+    plot(0, xlim = c(0, length(fileNames)), ylim = c(-0.1, 1), yaxs = "i", type = "n", axes = FALSE, xlab = "", ylab = "", ...)
     title(main, line = floor(par()$mar[3]) - 1)
     box()
 
