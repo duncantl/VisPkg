@@ -4,9 +4,15 @@ origShowFiles =
     #
 function(dir = "", vals = getLineLengths(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$",
          labelsAtTop = TRUE, labels = stripCommonPrefix(names(vals)),
-         legend = TRUE, cex = 1, mar = NA, 
+         legend = TRUE, cex = 1, mar = NA, order = FALSE,
          ..., drawLines = TRUE, main = dir)
 {
+    if(order) {
+        o = orderFiles(vals, TRUE)
+        vals = vals[o]
+        labels = labels[o]
+    }
+    
     mkEmptyPlot(labels, main, labelsAtTop, cex = cex, mar = mar, ...)
     
     showFileOutlines(vals, main = dir, drawLines = drawLines, ...)
@@ -23,15 +29,18 @@ function(vals, drawLines = TRUE, border = NULL, ...)
 
     nlines = sapply(vals, function(x) if(is.data.frame(x)) nrow(x) else length(x))
     bottom = 1 - nlines/max(nlines)
-    rect(x0, bottom, x0 + 1, rep(1, length(vals)))
-
+    
+    ans = NULL
     if(drawLines) {
         ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1, ...), SIMPLIFY = FALSE)
         tmp = do.call(rbind, ans)
         # drawLines(tmp[, 1:2], tmp[[3]], ...)
         rect(tmp[,1], tmp[,2], tmp[,3], tmp[,4], col = tmp[[5]], border = border, ...)        
-        return(invisible(ans))
     }
+
+    rect(x0, bottom, x0 + 1, rep(1, length(vals)))
+
+   invisible(ans)
 }
 
 stripCommonPrefix =
@@ -105,6 +114,9 @@ function(elInfo, left, right, bottom, top = 1)
 
     len = length(elInfo)
 
+    if(len == 0)
+        return(matrix(0, 0, 4))
+
     x0 = rep(left, len)
     x1 = left + (right - left)*elInfo/max(elInfo)    
 
@@ -143,6 +155,8 @@ function(elInfo, left, right, bottom, top = 1)
 }
 
 
+
+# Not used if we use rectangles. So check the code to see if used.
 drawLines =
     #
     # Draws the lines specified in the coords matrix
@@ -160,9 +174,8 @@ function(coords, col = coords[, 3], ...)
            }, groups, names(groups))
    
 }
-    
 
-
+##################
 
 mkLegend =
 function(x, colorMap = TypeColorMap, order = FALSE)
@@ -172,6 +185,8 @@ function(x, colorMap = TypeColorMap, order = FALSE)
 #        order = order()
     types = unique(unlist(lapply(x, `[[`, "type")))
     m = match(types, names(colorMap))
+
+    m = m[ order(names(colorMap)[m]) ]
         # Compute location based on the heights of the rectangles
         # so we find blank areas.
         # if none, then should have put this beside the plot which
