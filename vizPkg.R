@@ -178,7 +178,7 @@ function(coords, col = coords[, 3], ...)
 ##################
 
 mkLegend =
-function(x, colorMap = TypeColorMap, order = FALSE)
+function(x, pos = c(1, .4), colorMap = TypeColorMap, order = FALSE)
 {
     # if order is TRUE or is an integer
 #    if(is.logical(order) && order)
@@ -191,5 +191,5 @@ function(x, colorMap = TypeColorMap, order = FALSE)
         # so we find blank areas.
         # if none, then should have put this beside the plot which
         # is quite a different strategy.
-    legend(1, .4, legend = names(colorMap)[m], fill = colorMap[m])
+    legend(pos[1], pos[2], legend = names(colorMap)[m], fill = colorMap[m])
 }
