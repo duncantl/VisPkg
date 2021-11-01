@@ -1,3 +1,11 @@
++ add height to indicate size of top-level items
+
++ All lines of code and their type.
+  + or at least grouped by top-level item
+  + show if(TRUE/FALSE) as outer rectangle/background
+  + function as container and then each line/expression within that.
+
+
 + allow mapping of colors in call or do we do this on the computation of the Toplevel information
    + connect to legend. i.e.,
    + What functions use the col argument to draw. And what functions call those all the way back up.
@@ -9,7 +17,8 @@
    +
 
 
-+ warnings from use of ... in multiple places and passing graphics arguments to incorrect functions.
++ [check] warnings from use of ... in multiple places and passing graphics arguments to incorrect functions.
+  + Made border a parameter in showFileOutlines
 ```
  showFiles(ty[!grepl("z_enum", names(ty))], xaxis = "i", srt = 60, main = "Bob", cex = .5)
 1: In plot.window(...) : "xaxis" is not a graphical parameter
