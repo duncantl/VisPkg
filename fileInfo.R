@@ -73,9 +73,6 @@ function(x)
 
         getS3Methods(basename(x))
     }
-
-    
-
 }
 
 #getToplevelTypeDF =
@@ -107,8 +104,9 @@ function(file, S3Methods = getS3Methods(file[1]), asDataFrame = FALSE, colorMap 
     
     tmp = toplevelTypes(file, S3Methods)
     structure(data.frame(len = rep(1, length(tmp)),
-                         color = colorMap[tmp],
-                         type = tmp, file = rep(file, length(tmp)),
+#                         color = colorMap[tmp],
+                         type = tmp,
+                         file = rep(file, length(tmp)),
                          name = names(tmp)),
               class = c("ToplevelTypeInfo", "data.frame"))
 }    
@@ -141,13 +139,7 @@ setAs("MultiFileToplevelTypeInfo", "list", # "ToplevelTypeInfoList",
 ######################
 
 
-simpleLineType =
-function(file, lines = readLines(file))    
-{}
-
-
-
-
+# simpleLineType = function(file, lines = readLines(file)) {}
 
 
 ########################
@@ -160,7 +152,7 @@ function(x, asIndices = FALSE)
     v = if(all(w))
            sapply(x, nrow)
         else
-            sapply(x, length)
+           sapply(x, length)
 
     o = order(v)    
     if(asIndices)

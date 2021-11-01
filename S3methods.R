@@ -1,4 +1,9 @@
 plot.ToplevelTypeInfoList =
+    #
+    #  ty.ca = getToplevelTypes("~/GitWorkingArea/CodeAnalysis/R")
+    #  plot(ty.ca)
+    #  plot(ty.ca, colorMap = cmap2)
+    #
 function(x, ...)
     showFiles(x, ...)    
 #could have been
@@ -44,6 +49,9 @@ function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
 
 
 showFiles.character =
+    #
+    # cmap2 = c("call" = "pink", data = "brown", "function" = "red", "if(FALSE)" = 'yellow', "NULL" = "grey", S3generic = "red", "S3method" = "red2", S3OldClass="purple", "S4As" = "salmon", S4generic = "cyan", S4method = "blue")
+    # showFiles("~/GitWorkingArea/CodeAnalysis/R", FUN = getToplevelTypes, colorMap = cmap2)
 function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
          legend = TRUE, FUN = getLineLengths,  pattern = "\\.[RrSsQq]$",
          ..., drawLines = TRUE, main = character())

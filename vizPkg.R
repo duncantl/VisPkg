@@ -4,7 +4,8 @@ origShowFiles =
     #
 function(dir = "", vals = getLineLengths(files), files = getRFiles(dir, pattern), pattern = "\\.[RrSsQq]$",
          labelsAtTop = TRUE, labels = stripCommonPrefix(names(vals)),
-         legend = TRUE, cex = 1, mar = NA, order = FALSE,
+         legend = !is.null(colorMap), cex = 1, mar = NA, order = FALSE,
+         colorMap = if(inherits(vals, ("ToplevelTypeInfoList"))) TypeColorMap else NULL, # make a method.
          ..., drawLines = TRUE, main = dir)
 {
     if(order) {
@@ -15,15 +16,15 @@ function(dir = "", vals = getLineLengths(files), files = getRFiles(dir, pattern)
     
     mkEmptyPlot(labels, main, labelsAtTop, cex = cex, mar = mar, ...)
     
-    showFileOutlines(vals, main = dir, drawLines = drawLines, ...)
-#    if(!missing(legend) || isTRUE(legend))
-#        mkLegend(legend, vals)
+    showFileOutlines(vals, main = dir, drawLines = drawLines, colorMap = colorMap, ...)
+    if(!missing(legend) || isTRUE(legend))
+        mkLegend(vals, legend, colorMap = colorMap)
 }
 
 
 
 showFileOutlines =
-function(vals, drawLines = TRUE, border = NULL, ...)
+function(vals, drawLines = TRUE, border = NULL, colorMap = NULL, ...)
 {
     x0 = seq(.5, by = 1, length = length(vals))
 
@@ -34,28 +35,13 @@ function(vals, drawLines = TRUE, border = NULL, ...)
     if(drawLines) {
         ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1, ...), SIMPLIFY = FALSE)
         tmp = do.call(rbind, ans)
-        # drawLines(tmp[, 1:2], tmp[[3]], ...)
-        rect(tmp[,1], tmp[,2], tmp[,3], tmp[,4], col = tmp[[5]], border = border, ...)        
+        colors = mapColors(tmp[[5]], colorMap)
+        rect(tmp[,1], tmp[,2], tmp[,3], tmp[,4], col = colors, border = border, ...)        
     }
 
     rect(x0, bottom, x0 + 1, rep(1, length(vals)))
 
-   invisible(ans)
-}
-
-stripCommonPrefix =
-function(vals)    
-{
-      # See if they are all in the same directory before requiring Rlibstree be available.
-    pre = dirname(vals)
-    if(length(unique(pre)) == 1)
-        return(basename(vals))
-
-    pre = Rlibstree::getCommonPrefix(vals)
-    if(length(pre))
-        substring(vals, nchar(pre) + 1L)
-    else
-        vals
+    invisible(ans)
 }
 
 mkEmptyPlot =
@@ -91,17 +77,19 @@ function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, cex = 1, srt = 45, 
 }
 
 
-
 showFileElements =
 function(elInfo, left, right, bottom, top = 1,
-         color = if(is.data.frame(elInfo)) elInfo[,2] else "black", ...)
+         color = if(is.data.frame(elInfo)) elInfo[,2] else "black",
+         ...)
 {
     coords = computeFileLineCoords(elInfo, left, right, bottom, top = top)
 
-    if(length(color) != nrow(coords))
-        color = rep(color, nrow(coords))  # each = 3)
+#    if(length(color) != nrow(coords))
+#        color = rep(color, nrow(coords))  # each = 3)
 
-    cbind(as.data.frame(coords), color = color)
+    ans = as.data.frame(coords)
+    ans$type = color
+    ans
 }
 
 computeFileLineCoords =
@@ -125,38 +113,14 @@ function(elInfo, left, right, bottom, top = 1)
     cbind(x0, y0, x1, y1)
 }
 
-if(FALSE) {
-computeFileLineCoords =
-function(elInfo, left, right, bottom, top = 1)
-{
-
-    if(is.data.frame(elInfo))
-        elInfo = elInfo[,1]
-    
-    # elInfo will initially be the number of characters per line
-    # so we want to draw each line between left and right proportionally
-    # to that length.
-
-    # lines(c(10, 10.5, NA, 10, 10.6) + 1, c(.9, .9, NA, .8, .8), col = "red")
-    len = length(elInfo)
-    yv = seq(top, bottom, length = len)
-    y = x = rep(NA, 3 * len)
-    i = seq(1, by = 1, length = 3*len)
-    y[ (i %% 3 != 0) ] = rep(yv, each = 2)
-
-    i = seq(1, by = 3, length = len)
-    x[i] = left
-    x[i+1] = left + (right - left)*elInfo/max(elInfo)
-      
-    cbind(x, y)
-}
-}
-
 ##################
 
 mkLegend =
 function(x, pos = c(1, .4), colorMap = TypeColorMap, order = FALSE)
 {
+    if(isTRUE(pos))
+        pos = c(1, .4)
+    
     # if order is TRUE or is an integer
 #    if(is.logical(order) && order)
 #        order = order()
@@ -169,4 +133,33 @@ function(x, pos = c(1, .4), colorMap = TypeColorMap, order = FALSE)
         # if none, then should have put this beside the plot which
         # is quite a different strategy.
     legend(pos[1], pos[2], legend = names(colorMap)[m], fill = colorMap[m])
+}
+
+
+########
+stripCommonPrefix =
+function(vals)    
+{
+      # See if they are all in the same directory before requiring Rlibstree be available.
+    pre = dirname(vals)
+    if(length(unique(pre)) == 1)
+        return(basename(vals))
+
+    pre = Rlibstree::getCommonPrefix(vals)
+    if(length(pre))
+        substring(vals, nchar(pre) + 1L)
+    else
+        vals
+}
+
+
+mapColors =
+function(vals, colorMap)    
+{
+    if(length(colorMap) == 0)
+        return(rep("black", length(vals)))
+    
+    ans = colorMap[vals]
+    ans[ !(vals %in% names(colorMap)) ] = "black"
+    ans
 }
