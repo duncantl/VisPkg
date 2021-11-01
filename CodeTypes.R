@@ -120,6 +120,8 @@ function(e)
         }
     } else if(is.name(e))
         as.character(e)
+    else if(is.null(e))
+        "NULL"
     else
         browser()
 }
