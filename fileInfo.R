@@ -86,8 +86,9 @@ getToplevelTypes =
     #
 function(file, S3Methods = getS3Methods(file[1]), asDataFrame = FALSE, colorMap = TypeColorMap)
 {
-    if(file.info(file)$isdir)
-        file = getRFiles(file)
+#    if(length(file) == 1 && file.info(file)$isdir)
+    #        file = getRFiles(file)
+    file = xpdFileNames(file)
 
     if(length(file) > 1) {
         ans = lapply(file, getToplevelTypes, S3Methods, asDataFrame, colorMap)
