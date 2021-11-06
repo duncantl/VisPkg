@@ -84,32 +84,44 @@ getToplevelTypes =
     #
     # Now finds the S3 methods from file.
     #
-function(file, S3Methods = getS3Methods(file[1]), asDataFrame = FALSE, colorMap = TypeColorMap)
+function(file, S3Methods = getS3Methods(file[1]), asDataFrame = FALSE, colorMap = TypeColorMap, size = FALSE)
 {
 #    if(length(file) == 1 && file.info(file)$isdir)
     #        file = getRFiles(file)
     file = xpdFileNames(file)
 
     if(length(file) > 1) {
-        ans = lapply(file, getToplevelTypes, S3Methods, asDataFrame, colorMap)
+        ans = lapply(file, getToplevelTypes, S3Methods, asDataFrame, colorMap, size = size)
         if(asDataFrame) {
             ans = as(ans, "data.frame") # MultiFileToplevelTypeInfo")
 #            ans = do.call(rbind, ans)
 #            class(ans) = c("MultiFileToplevelTypeInfo", "ToplevelTypeInfo", "data.frame")
         } else {
             names(ans) = file
-            class(ans) = "ToplevelTypeInfoList"
+            class(ans) = c(if(size) "ToplevelSizeInfoList","ToplevelTypeInfoList")
         }
         return(ans)
     }
     
     tmp = toplevelTypes(file, S3Methods)
-    structure(data.frame(len = rep(1, length(tmp)),
+    ans = structure(data.frame(len = rep(1, length(tmp)),
 #                         color = colorMap[tmp],
                          type = tmp,
                          file = rep(file, length(tmp)),
                          name = names(tmp)),
-              class = c("ToplevelTypeInfo", "data.frame"))
+                     class = c("ToplevelTypeInfo", "data.frame"))
+
+    if(size) {
+        #        browser()
+        #  this means we have to parse the code again.  Should
+        #  we mix this computation into S3methods. Then have to conditionally
+        #  untangle tmp.  Messy/awkward.  But this is an efficiency argument
+        #  although will end up somewhat repeating code if we look at the RHS of assignments, etc.
+        ans$size = sapply(parse(file), numTerms)
+        class(ans) = c("ToplevelSizeInfo", class(ans))
+    }
+    
+    ans
 }    
 
 setOldClass(c("MultiFileToplevelTypeInfo", "ToplevelTypeInfo", "data.frame", "list"))
