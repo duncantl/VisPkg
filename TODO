@@ -22,7 +22,12 @@ How do we collect the size information along with the type.  We have to adapt ge
     + However, computeFileLineCoords starts by collapsing a data.frame to a vector.  We would lose the sie column.  We can keep the original data.frame around, but it is slightly ugly code.
     + What about making computeFileLineCoords generic and have methods for the Type data.frame, the Type & size data.frame and for a vector.  The former can get the vector and call the method for that. The Type & size can do something different, or it can call NextMethod() and then fix the y coordinates.
      We do the latter, at least as a start. It does involve unnecessarily computing the y0 and y1 for the regular case but that is pretty quick.
-  
+
+```
+z = getToplevelTypes("~/GitWorkingArea/CodeAnalysis/R", asDataFrame = FALSE, size = TRUE)
+plot(z, order = TRUE)
+```
+
 + All lines of code and their type.
   + or at least grouped by top-level item
   + show if(TRUE/FALSE) as outer rectangle/background
