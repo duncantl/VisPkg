@@ -94,10 +94,11 @@ function(elInfo, left, right, bottom, top = 1,
 
 computeFileLineCoords =
 function(elInfo, left, right, bottom, top = 1)
-{
-    if(is.data.frame(elInfo))
-        elInfo = elInfo[,1]
+    UseMethod("computeFileLineCoords")
 
+computeFileLineCoords.numeric = computeFileLineCoords.integer =
+function(elInfo, left, right, bottom, top = 1)
+{
     len = length(elInfo)
 
     if(len == 0)
@@ -112,6 +113,26 @@ function(elInfo, left, right, bottom, top = 1)
     
     cbind(x0, y0, x1, y1)
 }
+
+computeFileLineCoords.data.frame =
+    # Define for data.frame or the more specific class.
+function(elInfo, left, right, bottom, top = 1)
+    computeFileLineCoords(elInfo[,1], left, right, bottom, top)
+
+computeFileLineCoords.ToplevelSizeInfo =
+    # Define for data.frame or the more specific class.
+function(elInfo, left, right, bottom, top = 1)
+{
+    ans = NextMethod()
+
+    sz = elInfo$size/sum(elInfo$size)
+    sz2 = cumsum(sz)
+    tmp = top - sz2*(top-bottom)
+    ans[, "y0"] = tmp
+    ans[, "y1"] = c(top, tmp [-length(tmp) ])
+    ans
+}
+
 
 ##################
 
