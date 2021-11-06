@@ -36,7 +36,7 @@ function(vals, drawLines = TRUE, border = NULL, colorMap = NULL, ...)
         ans = mapply(showFileElements, vals, x0, x0 + 1, bottom, MoreArgs = list(top = 1, ...), SIMPLIFY = FALSE)
         tmp = do.call(rbind, ans)
         colors = mapColors(tmp[[5]], colorMap)
-        rect(tmp[,1], tmp[,2], tmp[,3], tmp[,4], col = colors, border = border, ...)        
+        rect(tmp[,1], tmp[,2], tmp[,3], tmp[,4], col = colors, border = border, xpd = TRUE, ...)        
     }
 
     rect(x0, bottom, x0 + 1, rep(1, length(vals)))
@@ -50,7 +50,7 @@ function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, cex = 1, srt = 45, 
     opar = par(no.readonly = TRUE)
     on.exit(par(mar = opar$mar))
         
-    if(is.na(mar)) 
+    if(length(mar) ==1 && is.na(mar)) 
         # nc = max(nchar(fileNames))
         mar = ceiling(sin(srt/180*pi)*cex*max(nchar(fileNames))/3)
         # old approach: ad hoc
@@ -65,8 +65,9 @@ function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, cex = 1, srt = 45, 
         mar[3] = mar[1] + 3 # extra 2 lines is for the title.
         mar[1] = 1
         y = par("usr")[4]*1.01
-    } else
-        par("usr")[3]*1.2
+    } else {
+        y = par("usr")[3]*1.075
+    }
     
     par(mar = mar)
     plot(0, xlim = c(0, length(fileNames)), ylim = c(-0.1, 1), yaxs = "i", type = "n", axes = FALSE, xlab = "", ylab = "", ...)
