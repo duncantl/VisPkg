@@ -1,20 +1,41 @@
 + add height to indicate size of top-level items
+ Suppose we use numTerms as the size.
+ How do we change the plotting/display to accept this information and use it.
+ Do we continue with the size of the files being scaled relative to each other
+ or make them all the same height. Keep it as is.
+ Have a second column in the data.frame that gives the size/height.
+ Then scale these relative to each other to fit between the top and  the bottom of this rectangle.
+ Since we are returning the coordinates of the rectangles, the code that gets these doesn't have to change.
 
 + All lines of code and their type.
   + or at least grouped by top-level item
   + show if(TRUE/FALSE) as outer rectangle/background
   + function as container and then each line/expression within that.
 
++ Class hierarchies
 
-+ allow mapping of colors in call or do we do this on the computation of the Toplevel information
++ Other "line" information measures
+  + changes to lines
+  + C/C++ top-level items
+    + [check] getToplevelNativeInfo
+  
++ 2 plots above and below for many files.
+
++ Exporting information to JavaScript do display there.
+   or htmlwidgets?...
+
+
+######
+
+
++ [done] allow mapping of colors in call or do we do this on the computation of the Toplevel information
    + connect to legend. i.e.,
    + What functions use the col argument to draw. And what functions call those all the way back up.
-     + can determine this manually  or programmaatically:  showFileOutlines,  showFileElements  and mkLegend
+     + can determine this manually  or programmatically:  showFileOutlines,  showFileElements  and mkLegend
      + We have all the drawing functions in vizPkg so easy to find although programmatic search makes this less relevant.
      + Which functions call these functions that directly use the colors.
      + mkLegend() takes a colorMap argument with a default value.
    + Do we want the user to specify the colors or have a default for the type of object being plotted (R or C code) or both.
-   +
 
 
 + [check] warnings from use of ... in multiple places and passing graphics arguments to incorrect functions.
@@ -97,17 +118,6 @@ legend(1, .4, legend = names(TypeColorMap)[m], fill = TypeColorMap[m])
    - [check] take into account for computing margin.
    - √ passed to mkEmptyPlot()
 
-+ Class hierarchies
-
-+ Other "line" information measures
-  + changes to lines
-  + C/C++ top-level items
-    + [check] getToplevelNativeInfo
-  
-+ 2 plots above and below for many files.
-
-+ Exporting information to JavaScript do display there.
- or htmlwidgets?...
 
 
 # Done
