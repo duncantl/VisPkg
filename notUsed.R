@@ -1,3 +1,5 @@
+if(FALSE) {
+    
 # Not used if we use rectangles. So check the code to see if used.
 drawLines =
     #
@@ -43,5 +45,6 @@ function(elInfo, left, right, bottom, top = 1)
     x[i+1] = left + (right - left)*elInfo/max(elInfo)
       
     cbind(x, y)
+}
 }
 }
