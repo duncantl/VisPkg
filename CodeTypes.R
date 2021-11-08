@@ -29,6 +29,8 @@ function(e, S3Methods = NULL, followIf = FALSE) # was TRUE
                    "setClass" = "S4Class",                   
                    "setOldClass" = "S3OldClass",
                    "function" = getFunctionType(e),
+                   "for" = "for",
+                   "while" = "while",                   
                    "if" = switch(class(e[[2]]),
                                  "logical" = if(e[[2]]) "if(TRUE)" else "if(FALSE)",
                                   if(followIf) 
