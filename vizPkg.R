@@ -6,6 +6,7 @@ function(dir = "", vals = getLineLengths(files), files = getRFiles(dir, pattern)
          labelsAtTop = TRUE, labels = stripCommonPrefix(names(vals)),
          legend = !is.null(colorMap), cex = 1, mar = NA, order = FALSE,
          colorMap = if(inherits(vals, ("ToplevelTypeInfoList"))) TypeColorMap else NULL, # make a method.
+         border = NULL,
          ..., drawLines = TRUE, main = dir)
 {
     if(order) {
@@ -16,7 +17,7 @@ function(dir = "", vals = getLineLengths(files), files = getRFiles(dir, pattern)
     
     mkEmptyPlot(labels, main, labelsAtTop, cex = cex, mar = mar, ...)
     
-    showFileOutlines(vals, main = dir, drawLines = drawLines, colorMap = colorMap, ...)
+    showFileOutlines(vals, main = dir, drawLines = drawLines, colorMap = colorMap, border = border, ...)
     if(!missing(legend) || isTRUE(legend))
         mkLegend(vals, legend, colorMap = colorMap)
 }
