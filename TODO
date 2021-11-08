@@ -1,4 +1,11 @@
++ Debugging
+  + show how to debug the S3 methods for showFiles as we add one for showFiles.ToplevelTypeInfo
+     + Then walk through the different calls to generics and methods.
+
++ what happes when only one file.
+
 + add height to indicate size of top-level items
+ Put this discussion into the chapter.  OOP or writing functions.
  Suppose we use numTerms as the size.
  How do we change the plotting/display to accept this information and use it.
  Do we continue with the size of the files being scaled relative to each other
@@ -28,8 +35,33 @@ z = getToplevelTypes("~/GitWorkingArea/CodeAnalysis/R", asDataFrame = FALSE, siz
 plot(z, order = TRUE)
 ```
 
+
++ 2 plots above and below when we have many files.
+  + would we want the lower plot to go from bottom to top, i.e. opposite order
+```
+layout(matrix(c(1, 2), nrow = 2, ncol = 1))
+plot(z[1:23], legend = FALSE, mar = c(4, 1, 0, 1)) # the first one gets swapped. not great design or perhaps implementation as could handle this.
+plot(z[24:45], labelsAtTop = FALSE, mar = c(7, 1, 0, 1))
+```
+  + top part of 2nd plot cut off.
+    + True even if plot without layout. So a bug.
+    + Needs xpd = TRUE in the call to rect().
+  + warning about is.na(mar) having more than one element.
+    + fixed. Check length is 1.
+
+
 + All lines of code and their type.
   + or at least grouped by top-level item
+  + use getParseData()x
+``
+tpty = getCodeTypeInfo(pdata = d)
+showFiles(tpty, labels = "TOY.R", border = NA, legend = c(.8, .99))
+showFiles(structure(list(tpty), names = "TOY.R", class = c("ToplevelSizeInfoList", "ToplevelTypeInfoList")), border = NA, legend = c(.8, .99))
+```
+  + [add to text in chapter] Make showFiles recognize this individual file.
+     + add a method.
+       + Note how we turn the object into something for which we have another method.
+     + handle labels carefully - if passed, use them, otherwise don't use the names on the data.frame. Very wrong.
   + show if(TRUE/FALSE) as outer rectangle/background
   + function as container and then each line/expression within that.
 
@@ -39,8 +71,6 @@ plot(z, order = TRUE)
   + changes to lines
   + C/C++ top-level items
     + [check] getToplevelNativeInfo
-  
-+ 2 plots above and below for many files.
 
 + Exporting information to JavaScript do display there.
    or htmlwidgets?...
@@ -59,7 +89,10 @@ plot(z, order = TRUE)
    + Do we want the user to specify the colors or have a default for the type of object being plotted (R or C code) or both.
 
 
-+ [check] warnings from use of ... in multiple places and passing graphics arguments to incorrect functions.
++ [fix] warnings from use of ... in multiple places and passing graphics arguments to incorrect functions.
+  + plot() or showFiles() with border = NA
+     + Fix is to add border = NULL to origShowFiles() function.
+     + Add to text in chapter.
   + Made border a parameter in showFileOutlines
 ```
  showFiles(ty[!grepl("z_enum", names(ty))], xaxis = "i", srt = 60, main = "Bob", cex = .5)

@@ -141,3 +141,51 @@ isConstantOrCall =
     #  - foo(x) 
 function(e)    
   is.call(e) && length(e) == 2 && (isLiteral(e[[2]]) || is.name(e[[2]]))
+
+
+#######################
+
+getCodeTypeInfo =
+function(code, recursive = TRUE, pdata = getParseData(code, TRUE))
+{
+    if(missing(pdata)) {
+        if(is.character(code)) {
+            if(file.exists(code))
+                code = parse(code)
+            else
+                code = parse(text = code)
+        }
+    }
+
+    isTopLevel = pdata$parent < 1
+    toplevelEls = mapply(function(s, e) pdata[pdata$line1 >= s & pdata$line2 <= e,], pdata$line1[isTopLevel], pdata$line2[isTopLevel], SIMPLIFY = FALSE)
+    toplevelEls = toplevelEls[sapply(toplevelEls, function(x) x$parent[1] < 1)]
+
+
+#    browser()
+    tpe = lapply(toplevelEls, function(x) parse(text = x[1, "text"]))
+    ids = rep(as.character(NA), length(tpe))
+    type = rep(NA, length(tpe))
+    w = sapply(tpe, length) == 0
+    type[ w ] = "comment"
+    
+    type[!w] = sapply(tpe[!w], getToplevelCodeType, followIf = FALSE)
+    ids[!w] = sapply(tpe[!w], getToplevelName)
+    lwds = tapply(d$col2,  d$line1, max)
+    rwidths = sapply(toplevelEls, function(x) max(lwds[intersect(as.character(seq(min(x$line1), max(x$line2), by = 1)), names(lwds))]))
+
+    ans = data.frame(widths = rwidths,
+        #len = rep(1, length(toplevelEls)),
+                     type = type,
+                     size = sapply(toplevelEls, function(x) max(x$line2) - min(x$line1) + 1L),
+                     name = ids,
+                     lineNum = sapply(toplevelEls, function(x) min(x$line1)),
+                     id = sapply(toplevelEls, function(x) x$id[1]))
+
+    class(ans) = c("ToplevelSizeInfo", "ToplevelTypeInfo", "data.frame")
+    ans
+
+    
+    # toplevelEls
+}
+
