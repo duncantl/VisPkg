@@ -26,7 +26,7 @@ function(dir = "", vals = getLineLengths(files), files = getRFiles(dir, pattern)
 showFileOutlines =
 function(vals, drawLines = TRUE, border = NULL, colorMap = NULL, ...)
 {
-    x0 = seq(.5, by = 1, length = length(vals))
+    x0 = seq(0, by = 1, length = length(vals))
 
     nlines = sapply(vals, function(x) if(is.data.frame(x)) nrow(x) else length(x))
     bottom = 1 - nlines/max(nlines)
@@ -74,7 +74,7 @@ function(fileNames, main = "", labelsAtTop = TRUE, mar = NA, cex = 1, srt = 45, 
     title(main, line = floor(par()$mar[3]) - 1)
     box()
 
-    text(labels = fileNames, x = 1:length(fileNames), y = y, xpd = NA, srt = srt, adj = if(labelsAtTop) 0 else 1, cex = cex, ...)
+    text(labels = fileNames, x = seq(.5, by = .5, length = length(fileNames)), y = y, xpd = NA, srt = srt, adj = if(labelsAtTop) 0 else 1, cex = cex, ...)
 }
 
 
@@ -106,7 +106,7 @@ function(elInfo, left, right, bottom, top = 1)
         return(matrix(0, 0, 4))
 
     x0 = rep(left, len)
-    x1 = left + (right - left)*elInfo/max(elInfo)    
+    x1 = left + (right - left)*elInfo/max(elInfo, na.rm = TRUE)    
 
     tmp = seq(top, bottom, length = len + 1L)
     y1 = tmp[- (len + 1L)]
@@ -138,10 +138,10 @@ function(elInfo, left, right, bottom, top = 1)
 ##################
 
 mkLegend =
-function(x, pos = c(1, .4), colorMap = TypeColorMap, order = FALSE)
+function(x, pos = c(0, .0), colorMap = TypeColorMap, order = FALSE)
 {
     if(isTRUE(pos))
-        pos = c(1, .4)
+        pos = c(0, .0)  # Annoying to have this in two places. As we experiment with good default location with only one file, this involves a lot of changes.
     
     # if order is TRUE or is an integer
 #    if(is.logical(order) && order)
@@ -154,7 +154,7 @@ function(x, pos = c(1, .4), colorMap = TypeColorMap, order = FALSE)
         # so we find blank areas.
         # if none, then should have put this beside the plot which
         # is quite a different strategy.
-    legend(pos[1], pos[2], legend = names(colorMap)[m], fill = colorMap[m])
+    legend(pos[1], pos[2], legend = names(colorMap)[m], fill = colorMap[m], xpd = TRUE)
 }
 
 
