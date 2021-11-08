@@ -20,7 +20,7 @@ function(x, ...)
 
 showFiles =
 function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(vals)),
-         legend = TRUE,             
+         legend = TRUE,  
          ..., drawLines = TRUE, main = dir)
     UseMethod("showFiles")
 
@@ -31,12 +31,12 @@ function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
     UseMethod("showFiles")
 
 
+
 showFiles.ToplevelTypeInfoList = showFiles.FileLineLengthInfo =
 function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
          legend = TRUE,             
          ..., drawLines = TRUE, main = character())
     origShowFiles(vals = info, labelsAtTop = labelsAtTop, labels = labels, legend = legend, ..., drawLines = drawLines, main = main)
-
 
 showFiles.MultiFileToplevelTypeInfo =
 function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
@@ -60,6 +60,19 @@ function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
     info = FUN(info)
     showFiles(info, labelsAtTop = labelsAtTop, labels = labels, legend = legend, ..., drawLines = drawLines, main = main)
 }
+
+
+#"ToplevelSizeInfo" "ToplevelTypeInfo" "data.frame"      
+showFiles.ToplevelTypeInfo =
+function(info, labelsAtTop = TRUE, labels = stripCommonPrefix(names(info)),
+         legend = TRUE,             
+         ..., drawLines = TRUE, main = character())
+{
+    showFiles(structure(list(info), names = "???", class = c("ToplevelSizeInfoList", "ToplevelTypeInfoList")),
+              labelsAtTop = labelsAtTop, labels = if(!missing(labels)) labels else "",
+              legend = legend, ..., drawLines = drawLines, main = main)
+}
+
 
 
 `[.ToplevelTypeInfoList` = `[.FileLineLengthInfo` =
