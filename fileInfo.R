@@ -43,7 +43,10 @@ TypeColorMap =
       S3OldClass = "purple4",
       S3generic = "darkolivegreen",
       S3method = "darkseagreen1",
-      symbol = "gold"
+      symbol = "gold",
+      comment = "lightgrey",
+      "for" = "salmon",
+      "while" = "salmon4"      
      )
 
 getS3Methods =
