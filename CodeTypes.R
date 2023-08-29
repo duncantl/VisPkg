@@ -189,3 +189,58 @@ function(code, recursive = TRUE, pdata = getParseData(code, TRUE))
     # toplevelEls
 }
 
+
+
+
+
+
+
+
+
+########################
+
+
+
+unravel =
+    #
+    # Goal here is to take a language object and turn it into
+    # a sequence of elements that we would display "line by line"
+    # such as
+    #  if(x < 0) f(x, h(y)) else g(x) would be
+    # if(x < 0)
+    #    f(x,
+    #      h(y))
+    # else
+    #     g(x)
+    #
+    # and f(g(h(x+1, y))) would be
+    #  f(
+    #    g(
+    #      h(
+    #        +(x, 1),
+    #        y)))
+    #
+    # By "line" we mean a separate element in a list.
+    # Ultimately, the list is flat, not very hierarchical.
+    # Not clear we can represent this with correct language objects.
+    #
+function(e)
+{
+    if(is.name(e) || isLiteral(e))
+        return(e)
+    #    print(e)
+    if(is.call(e)) {
+        
+        ans = e[[1]]
+        browser()
+        if(length(e) > 1) {
+            browser()
+            unravel(e[[2]])
+        }
+        if(length(e) > 2)
+            c(ans,  unlist(lapply(as.list(e)[-(1:2)], unravel)))
+        else
+            ans
+    } else
+       unlist(lapply(as.list(e), unravel))
+}
